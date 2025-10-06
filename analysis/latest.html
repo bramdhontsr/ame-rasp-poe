@@ -1,0 +1,38 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Latest Analysis</title>
+<style>
+  html,body{margin:0;height:100%}
+  body{font-family:sans-serif;display:grid;grid-template-rows:auto 1fr auto;gap:6px;padding:6px}
+  .row{display:flex;gap:8px;align-items:center;justify-content:center}
+  img{max-width:100%;height:auto;border:1px solid #ddd}
+  pre{font:12px/1.3 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space:pre-wrap; margin:0}
+</style>
+<div class="row"><strong>Latest analysis</strong></div>
+<div class="row">
+  <img id="contact" alt="contact sheet" width="256" height="256">
+</div>
+<div class="row">
+  <img id="hist" alt="histogram" width="256" height="80">
+</div>
+<div class="row">
+  <pre id="txt">Loading…</pre>
+</div>
+<script>
+  // base = "/ame-rasp-poe/"
+  const segs = location.pathname.split("/").filter(Boolean);
+  const base = (segs.length? "/" + segs[0] + "/" : "/");
+  const bust = Date.now();
+
+  const contact = document.getElementById('contact');
+  const hist    = document.getElementById('hist');
+  const txt     = document.getElementById('txt');
+
+  contact.src = base + "analysis/out/latest-contact.png?_=" + bust;
+  hist.src    = base + "analysis/out/latest-hist.png?_=" + bust;
+
+  fetch(base + "analysis/out/latest-report.txt?_=" + bust)
+    .then(r => r.ok ? r.text() : Promise.reject(r.status))
+    .then(t => txt.textContent = t)
+    .catch(()=> txt.textContent = "Nog geen analyse-output gevonden. Wacht op eerstvolgende workflow-run.");
+</script>
