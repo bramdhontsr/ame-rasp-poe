@@ -7,13 +7,24 @@
   iframe{flex:1;border:0}
 </style>
 <body>
-  <!-- Links: image met n=42 en L=8 (256px) -->
-  <iframe
-    title="image"
-    src="https://bramdhontsr.github.io/ame-rasp-poe/widgets/image.html?n=42&L=8&v=4"></iframe>
+  <!-- Links: IMAGE -->
+  <iframe id="imgFrame"
+    src="https://bramdhontsr.github.io/ame-rasp-poe/widgets/image.html?n=42&L=8&v=5"></iframe>
 
-  <!-- Rechts: sliders -->
-  <iframe
-    title="sliders"
-    src="https://bramdhontsr.github.io/ame-rasp-poe/widgets/sliders.html?v=4"></iframe>
+  <!-- Rechts: SLIDERS -->
+  <iframe id="uiFrame"
+    src="https://bramdhontsr.github.io/ame-rasp-poe/widgets/sliders.html?v=5"></iframe>
+
+  <script>
+    // vind het window-object van de image-iframe
+    const imgWin = document.getElementById('imgFrame').contentWindow;
+
+    // luister naar berichten van de sliders-iframe en stuur door naar image-iframe
+    window.addEventListener('message', (ev) => {
+      if (ev.data && ev.data.type === 'paramsUpdate') {
+        // optioneel: console.log('bridge ->', ev.data);
+        imgWin.postMessage(ev.data, '*');
+      }
+    });
+  </script>
 </body>
