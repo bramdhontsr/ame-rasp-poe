@@ -11,24 +11,10 @@
   <iframe id="uiFrame"></iframe>
 
   <script>
-    // 1) Neem optioneel een versie mee uit de URL (?v=...)
-    const u = new URL(location.href);
-    const userV = u.searchParams.get('v');
-    // 2) Gebruik timestamp als fallback (bust cache elke load)
-    const V = userV || Date.now().toString();
+    // Gebruik timestamp om cache te busten
+    const V = Date.now().toString();
 
     const IMG = "https://bramdhontsr.github.io/ame-rasp-poe/widgets/image.html?n=42&L=8";
     const UI  = "https://bramdhontsr.github.io/ame-rasp-poe/widgets/sliders.html";
 
-    document.getElementById('imgFrame').src = `${IMG}&v=${V}`;
-    document.getElementById('uiFrame').src  = `${UI}?v=${V}`;
-
-    // Brug blijft hetzelfde
-    const imgWin = document.getElementById('imgFrame').contentWindow;
-    window.addEventListener('message', (ev) => {
-      if (ev.data && ev.data.type === 'paramsUpdate') {
-        imgWin.postMessage(ev.data, '*');
-      }
-    });
-  </script>
-</body>
+    document.getElementById('imgFrame').src = `${
