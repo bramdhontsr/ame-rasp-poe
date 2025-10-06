@@ -5,17 +5,24 @@
   body{font-family:sans-serif;margin:0;padding:1rem}
   #tag{position:fixed;top:.5rem;right:.5rem;color:#06c;font:12px/1 system-ui}
   label{display:block;margin:.75rem 0}
+  input[type=range]{width:100%}
 </style>
 <div id="tag">SLIDERS</div>
-<label>Rood:  <input type="range" id="r" min="0" max="255" value="128"></label>
-<label>Groen: <input type="range" id="g" min="0" max="255" value="128"></label>
-<label>Blauw: <input type="range" id="b" min="0" max="255" value="128"></label>
+
+<label>Energie <input type="range" id="energie" min="0" max="100" value="60"></label>
+<label>Materie <input type="range" id="materie" min="0" max="100" value="30"></label>
+<label>Stilte  <input type="range" id="stilte"  min="0" max="100" value="40"></label>
+
 <script>
 function send(){
-  const r=+document.getElementById("r").value;
-  const g=+document.getElementById("g").value;
-  const b=+document.getElementById("b").value;
-  parent.postMessage({type:"colorUpdate", r,g,b}, "*");
+  const values={
+    energie:+document.getElementById("energie").value,
+    materie:+document.getElementById("materie").value,
+    stilte:+document.getElementById("stilte").value
+  };
+  parent.postMessage({type:"paramsUpdate", values}, "*");
 }
 document.querySelectorAll("input").forEach(el=>el.addEventListener("input",send));
+// stuur startwaarden meteen
+send();
 </script>
