@@ -1,66 +1,35 @@
 ﻿<!doctype html>
 <meta charset="utf-8">
-<title>Canvas Widget (2^n)</title>
+<title>AME Image</title>
 <style>
-  html,body{height:100%;margin:0;background:#111;display:grid;place-items:center}
-  #tag{position:fixed;top:.5rem;left:.5rem;color:#0f0;font:12px/1 system-ui}
-  canvas{image-rendering: pixelated; box-shadow:0 0 20px rgba(0,0,0,.4)}
+  body { margin:0; display:flex; justify-content:center; align-items:center; height:100vh; background:#eee; }
+  canvas { border:1px solid #666; }
 </style>
-<div id="tag">IMAGE</div>
-<canvas id="canvas"></canvas>
+<canvas id="c" width="256" height="256"></canvas>
 <script>
-const qp=(k,d=null)=>new URL(location.href).searchParams.get(k)??d;
-const L = parseInt(qp("L","8"),10);       // 2^L
-const N = BigInt(qp("n","42"));           // seed
-const dim = 1<<L;
+  // cache-buster
+  const V = new URLSearchParams(location.search).get('v') || Date.now();
 
-const c = document.getElementById("canvas");
-c.width=dim; c.height=dim;
-const ctx = c.getContext("2d");
+  const ctx = document.getElementById('c').getContext('2d');
 
-// simpele xorshift rng, gedetermineerd door N
-function rng32(seed){ let x=seed>>>0; return ()=>{ x^=x<<13; x>>>=0; x^=x>>17; x>>>=0; x^=x<<5; x>>>=0; return x>>>0; }; }
-
-const state = { energie:60, materie:30, stilte:40 };
-
-function draw(){
-  const seed = Number(N & 0xffffffffn) ^ (state.energie<<1) ^ (state.materie<<9);
-  const r = rng32(seed);
-  const img = ctx.createImageData(dim,dim);
-
-  const block = Math.max(1, Math.floor((state.materie/100)*16)); // 1..16
-  const noiseMix = (state.energie/100);                          // 0..1
-  const fade = 1 - (state.stilte/100)*0.5;                       // 1..0.5
-
-  // basis-kleur uit seed (8-velden idee kun je later mappen)
-  const baseR = (seed>>16)&255, baseG=(seed>>8)&255, baseB=seed&255;
-
-  for(let y=0;y<dim;y++){
-    for(let x=0;x<dim;x++){
-      const i=(y*dim+x)*4;
-      const n = r()&255;
-      const mask = ((((x/block)|0)^((y/block)|0))&1)?1:0; // dyadische blokjes
-      const mix = noiseMix*0.8 + (mask?0.2:0.05);
-
-      let R = baseR*(1-mix) + n*mix;
-      let G = baseG*(1-mix) + n*mix*0.8;
-      let B = baseB*(1-mix) + n*mix*0.6;
-
-      img.data[i+0]=R*fade;
-      img.data[i+1]=G*fade;
-      img.data[i+2]=B*fade;
-      img.data[i+3]=255;
+  function draw(r=128,g=128,b=128){
+    const img = ctx.createImageData(256,256);
+    for(let i=0;i<img.data.length;i+=4){
+      img.data[i] = r;
+      img.data[i+1] = g;
+      img.data[i+2] = b;
+      img.data[i+3] = 255;
     }
+    ctx.putImageData(img,0,0);
   }
-  ctx.putImageData(img,0,0);
-}
-draw();
 
-// updates van sliders
-window.addEventListener("message", ev=>{
-  if(ev.data && ev.data.type==="paramsUpdate"){
-    Object.assign(state, ev.data.values);
-    draw();
-  }
-});
+  // init
+  draw();
+
+  // luisteren naar updates van sliders
+  window.addEventListener('message', ev=>{
+    if(ev.data && ev.data.type==="paramsUpdate"){
+      draw(ev.data.r, ev.data.g, ev.data.b);
+    }
+  });
 </script>
