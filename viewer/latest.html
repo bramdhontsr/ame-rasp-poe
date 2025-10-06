@@ -1,0 +1,13 @@
+﻿<!doctype html>
+<meta charset="utf-8">
+<title>Latest Piece</title>
+<script>
+fetch('/ame-rasp-poe/gallery/latest.json?_=' + Date.now())
+  .then(r=>r.json())
+  .then(j=>{
+    if (j.img) { location.replace('/ame-rasp-poe/viewer/piece.html?img=' + encodeURIComponent(j.img)); return; }
+    const n=j.n ?? 42, L=j.L ?? 8;
+    location.replace('/ame-rasp-poe/viewer/piece.html?n=' + encodeURIComponent(n) + '&L=' + encodeURIComponent(L));
+  })
+  .catch(()=>document.write('<p style="font-family:sans-serif">Geen latest.json gevonden.</p>'));
+</script>
