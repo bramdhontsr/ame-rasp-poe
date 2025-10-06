@@ -1,0 +1,4 @@
+Size: 256x256 px
+Mean RGB: (193.4, 192.3, 182.0)
+Std  RGB: (58.7, 61.2, 68.8)
+Entropy (gray): 6.088 bits
