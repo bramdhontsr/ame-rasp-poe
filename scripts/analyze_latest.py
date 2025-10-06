@@ -112,34 +112,19 @@ def sobel_edge(gray_u8):
     mag = np.sqrt(gx*gx + gy*gy)
     mag = np.clip(mag / (mag.max()+1e-6) * 255, 0, 255).astype(np.uint8)
     return mag
+def save_compare_grid(prev, latest, outpath):
+    """
+    Maak een 256×256 beeld waarin prev (links) en latest (rechts) worden getoond.
+    Beide worden verkleind naar 128×256 en naast elkaar geplaatst.
+    """
+    prev_small   = prev.resize((128, 256))
+    latest_small = latest.resize((128, 256))
 
-def save_compare_grid(prev_img, latest_img, dest):
-    # TL prev, TR latest, BL abs-diff (grijs), BR edge-map (Sobel op latest)
-    prev_small   = prev_img.resize((128,128), Image.NEAREST)
-    latest_small = latest_img.resize((128,128), Image.NEAREST)
+    grid = Image.new("RGB", (256, 256), (255, 255, 255))
+    grid.paste(prev_small,   (0, 0))
+    grid.paste(latest_small, (128, 0))
+    grid.save(outpath)
 
-    a = np.array(prev_small, dtype=np.int16)
-    b = np.array(latest_small, dtype=np.int16)
-    diff = np.abs(a - b).astype(np.uint8)
-    diff_gray = (0.299*diff[...,0] + 0.587*diff[...,1] + 0.114*diff[...,2]).astype(np.uint8)
-    diff_gray_rgb = np.stack([diff_gray]*3, axis=-1)
-
-    latest_gray = (0.299*b[...,0] + 0.587*b[...,1] + 0.114*b[...,2]).astype(np.uint8)
-    try:
-        edges = sobel_edge(latest_gray)
-    except Exception:
-        # als scipy niet beschikbaar is, fallback op PIL EDGE_ENHANCE + normalisatie
-        pil_edge = Image.fromarray(latest_small).filter(ImageFilter.FIND_EDGES).convert("L")
-        edges = np.array(pil_edge)
-
-    edges_rgb = np.stack([edges]*3, axis=-1)
-
-    grid = Image.new("RGB", (256,256), "white")
-    grid.paste(Image.fromarray(prev_small),   (0,0))
-    grid.paste(Image.fromarray(latest_small), (128,0))
-    grid.paste(Image.fromarray(diff_gray_rgb),(0,128))
-    grid.paste(Image.fromarray(edges_rgb),    (128,128))
-    grid.save(dest, "PNG")
 
 def main():
     latest_rel = load_latest_relpath()

@@ -1,4 +1,3 @@
-﻿numpy`np
+numpy
 pillow
 matplotlib
-scipy
