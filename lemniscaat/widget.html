@@ -7,22 +7,26 @@
   iframe{flex:1;border:0}
 </style>
 <body>
-  <!-- Links: IMAGE -->
-  <iframe id="imgFrame"
-    src="https://bramdhontsr.github.io/ame-rasp-poe/widgets/image.html?n=42&L=8&v=5"></iframe>
-
-  <!-- Rechts: SLIDERS -->
-  <iframe id="uiFrame"
-    src="https://bramdhontsr.github.io/ame-rasp-poe/widgets/sliders.html?v=5"></iframe>
+  <iframe id="imgFrame"></iframe>
+  <iframe id="uiFrame"></iframe>
 
   <script>
-    // vind het window-object van de image-iframe
-    const imgWin = document.getElementById('imgFrame').contentWindow;
+    // 1) Neem optioneel een versie mee uit de URL (?v=...)
+    const u = new URL(location.href);
+    const userV = u.searchParams.get('v');
+    // 2) Gebruik timestamp als fallback (bust cache elke load)
+    const V = userV || Date.now().toString();
 
-    // luister naar berichten van de sliders-iframe en stuur door naar image-iframe
+    const IMG = "https://bramdhontsr.github.io/ame-rasp-poe/widgets/image.html?n=42&L=8";
+    const UI  = "https://bramdhontsr.github.io/ame-rasp-poe/widgets/sliders.html";
+
+    document.getElementById('imgFrame').src = `${IMG}&v=${V}`;
+    document.getElementById('uiFrame').src  = `${UI}?v=${V}`;
+
+    // Brug blijft hetzelfde
+    const imgWin = document.getElementById('imgFrame').contentWindow;
     window.addEventListener('message', (ev) => {
       if (ev.data && ev.data.type === 'paramsUpdate') {
-        // optioneel: console.log('bridge ->', ev.data);
         imgWin.postMessage(ev.data, '*');
       }
     });
