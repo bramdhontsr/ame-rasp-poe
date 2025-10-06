@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Previous Piece</title>
+<script>
+  (async function(){
+    const segs = location.pathname.split("/").filter(Boolean);
+    const base = (segs.length? "/" + segs[0] + "/" : "/");
+    const m = await fetch(base + "analysis/out/marker.json?_=" + Date.now()).then(r=>r.json());
+    const name = m.source_prev;
+    if(!name){ document.write("Geen previous gevonden"); return; }
+    location.replace(base + "viewer/piece.html?img=" + encodeURIComponent("gallery/" + name));
+  })();
+</script>
