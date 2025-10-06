@@ -9,25 +9,39 @@
 </style>
 <div class="box" id="box"></div>
 <script>
-  // Gebruik: piece.html?img=/ame-rasp-poe/gallery/NAAM.webp
-  // of:      piece.html?n=42&L=8  (rendert via widgets/image.html)
-  const u = new URL(location.href);
-  const box = document.getElementById('box');
-  const imgSrc = u.searchParams.get('img');
+  (function () {
+    const u = new URL(location.href);
+    const box = document.getElementById('box');
 
-  if (imgSrc) {
-    const img = new Image();
-    img.decoding = "async";
-    img.loading = "eager";
-    img.src = imgSrc;
-    box.appendChild(img);
-  } else {
-    // fallback naar code-render: widgets/image.html
-    const n = u.searchParams.get('n') ?? '42';
-    const L = u.searchParams.get('L') ?? '8';
-    const v = Date.now();
-    const f = document.createElement('iframe');
-    f.src = `https://bramdhontsr.github.io/ame-rasp-poe/widgets/image.html?n=${encodeURIComponent(n)}&L=${encodeURIComponent(L)}&v=${v}`;
-    box.appendChild(f);
-  }
+    // siteBase = "/ame-rasp-poe/" (eerste padsegment)
+    const segs = location.pathname.split("/").filter(Boolean);
+    const siteBase = (segs.length ? "/" + segs[0] + "/" : "/");
+
+    function resolvePath(p) {
+      if (!p) return null;
+      if (/^https?:\/\//i.test(p)) return p;   // absolute URL
+      if (p.startsWith("/")) return p;         // site-absolute
+      return siteBase + p;                     // relative => onder repo-root
+    }
+
+    const imgSrcRaw = u.searchParams.get("img");
+    const n = u.searchParams.get("n");
+    const L = u.searchParams.get("L") || "8";
+    const bust = Date.now();
+
+    if (imgSrcRaw) {
+      const img = new Image();
+      img.decoding = "async";
+      img.loading = "eager";
+      img.src = resolvePath(imgSrcRaw) + "?_=" + bust; // cache-bust
+      box.appendChild(img);
+      return;
+    }
+
+    // val terug op JS-render via widgets/image.html
+    const seed = n ?? "42";
+    const ifr = document.createElement("iframe");
+    ifr.src = siteBase + "widgets/image.html?n=" + encodeURIComponent(seed) + "&L=" + encodeURIComponent(L) + "&v=" + bust;
+    box.appendChild(ifr);
+  })();
 </script>

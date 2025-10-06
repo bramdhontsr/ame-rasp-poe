@@ -2,12 +2,24 @@
 <meta charset="utf-8">
 <title>Latest Piece</title>
 <script>
-fetch('/ame-rasp-poe/gallery/latest.json?_=' + Date.now())
-  .then(r=>r.json())
-  .then(j=>{
-    if (j.img) { location.replace('/ame-rasp-poe/viewer/piece.html?img=' + encodeURIComponent(j.img)); return; }
-    const n=j.n ?? 42, L=j.L ?? 8;
-    location.replace('/ame-rasp-poe/viewer/piece.html?n=' + encodeURIComponent(n) + '&L=' + encodeURIComponent(L));
-  })
-  .catch(()=>document.write('<p style="font-family:sans-serif">Geen latest.json gevonden.</p>'));
+  // Bepaal siteBase, bv. "/ame-rasp-poe/"
+  (function () {
+    const segs = location.pathname.split("/").filter(Boolean); // ["ame-rasp-poe","viewer","latest.html"]
+    const siteBase = (segs.length ? "/" + segs[0] + "/" : "/");
+    const bust = Date.now();
+
+    fetch(siteBase + "gallery/latest.json?_=" + bust)
+      .then(r => r.json())
+      .then(j => {
+        const q = new URLSearchParams();
+        if (j.img) q.set("img", j.img);
+        if (j.n != null) q.set("n", j.n);
+        if (j.L != null) q.set("L", j.L);
+        location.replace(siteBase + "viewer/piece.html?" + q.toString());
+      })
+      .catch(err => {
+        document.write('<p style="font-family:sans-serif">Geen latest.json gevonden.</p>');
+        console.error(err);
+      });
+  })();
 </script>
