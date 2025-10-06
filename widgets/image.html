@@ -1,53 +1,28 @@
 ﻿<!doctype html>
 <meta charset="utf-8">
 <title>Canvas Widget</title>
+<style>
+  html,body{height:100%;margin:0;background:#111;display:grid;place-items:center}
+  #tag{position:fixed;top:.5rem;left:.5rem;color:#0f0;font:12px/1 system-ui}
+</style>
+<div id="tag">IMAGE</div>
 <canvas id="canvas" width="256" height="256"></canvas>
 <script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const c = document.getElementById("canvas");
+const ctx = c.getContext("2d");
 
-function draw(r=128, g=128, b=128) {
-  const imgData = ctx.createImageData(canvas.width, canvas.height);
-  for (let i = 0; i < imgData.data.length; i += 4) {
-    imgData.data[i]   = r;
-    imgData.data[i+1] = g;
-    imgData.data[i+2] = b;
-    imgData.data[i+3] = 255;
+function draw(r=128,g=128,b=128){
+  const img = ctx.createImageData(c.width,c.height);
+  for(let i=0;i<img.data.length;i+=4){
+    img.data[i]=r; img.data[i+1]=g; img.data[i+2]=b; img.data[i+3]=255;
   }
-  ctx.putImageData(imgData, 0, 0);
+  ctx.putImageData(img,0,0);
 }
 draw();
 
-// Luisteren naar slider-updates
-window.addEventListener("message", (event) => {
-  if (event.data.type === "colorUpdate") {
-    const { r, g, b } = event.data;
-    draw(r, g, b);
+window.addEventListener("message", ev=>{
+  if(ev.data && ev.data.type==="colorUpdate"){
+    draw(ev.data.r, ev.data.g, ev.data.b);
   }
-});
-</script>
-"@ | Out-File -Encoding utf8 widgets\image.html
-
-# sliders.html (3 schuifregelaars)
-@"
-<!doctype html>
-<meta charset="utf-8">
-<title>Sliders Widget</title>
-<style>
-  body { font-family: sans-serif; padding: 1em; }
-  label { display: block; margin: 0.5em 0; }
-</style>
-<label>Rood: <input type="range" id="r" min="0" max="255" value="128"></label>
-<label>Groen: <input type="range" id="g" min="0" max="255" value="128"></label>
-<label>Blauw: <input type="range" id="b" min="0" max="255" value="128"></label>
-<script>
-function sendUpdate() {
-  const r = document.getElementById("r").value;
-  const g = document.getElementById("g").value;
-  const b = document.getElementById("b").value;
-  parent.postMessage({ type: "colorUpdate", r: +r, g: +g, b: +b }, "*");
-}
-document.querySelectorAll("input").forEach(inp => {
-  inp.addEventListener("input", sendUpdate);
 });
 </script>

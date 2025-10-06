@@ -2,23 +2,20 @@
 <meta charset="utf-8">
 <title>Sliders Widget</title>
 <style>
-  body { font-family: sans-serif; padding: 1em; }
-  label { display: block; margin: 0.5em 0; }
+  body{font-family:sans-serif;margin:0;padding:1rem}
+  #tag{position:fixed;top:.5rem;right:.5rem;color:#06c;font:12px/1 system-ui}
+  label{display:block;margin:.75rem 0}
 </style>
-
-<label>Rood: <input type="range" id="r" min="0" max="255" value="128"></label>
+<div id="tag">SLIDERS</div>
+<label>Rood:  <input type="range" id="r" min="0" max="255" value="128"></label>
 <label>Groen: <input type="range" id="g" min="0" max="255" value="128"></label>
 <label>Blauw: <input type="range" id="b" min="0" max="255" value="128"></label>
-
 <script>
-function sendUpdate() {
-  const r = document.getElementById("r").value;
-  const g = document.getElementById("g").value;
-  const b = document.getElementById("b").value;
-  parent.postMessage({ type: "colorUpdate", r: +r, g: +g, b: +b }, "*");
+function send(){
+  const r=+document.getElementById("r").value;
+  const g=+document.getElementById("g").value;
+  const b=+document.getElementById("b").value;
+  parent.postMessage({type:"colorUpdate", r,g,b}, "*");
 }
-
-document.querySelectorAll("input").forEach(inp => {
-  inp.addEventListener("input", sendUpdate);
-});
+document.querySelectorAll("input").forEach(el=>el.addEventListener("input",send));
 </script>
