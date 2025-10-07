@@ -1,6 +1,6 @@
 Latest image analysis report
 ============================
 Shape: 256x256 px
-Mean RGB: (169.83, 147.66, 113.29)
-Std  RGB: (54.41, 55.10, 60.39)
-Entropy (gray): 7.480 bits
+Mean RGB: (166.28, 153.45, 138.16)
+Std  RGB: (76.39, 73.19, 75.64)
+Entropy (gray): 6.885 bits
